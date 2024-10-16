@@ -17,10 +17,7 @@ wiki = WikipediaQueryRun(api_wrapper=wiki_wrapper)
 search = DuckDuckGoSearchRun(name="Search")
 
 st.title("🔎 LangChain - Chat with search")
-"""
-In this example, we're using `StreamlitCallbackHandler` to display the thoughts and actions of an agent in an interactive Streamlit app.
-Try more LangChain 🤝 Streamlit Agent examples at [github.com/langchain-ai/streamlit-agent](https://github.com/langchain-ai/streamlit-agent).
-"""
+
 
 ## Sidebar for settings
 st.sidebar.title("Settings")
@@ -34,7 +31,9 @@ if "messages" not in st.session_state:
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg['content'])
 
-if prompt := st.chat_input(placeholder="What is machine learning?"):
+# Get user input
+if prompt := st.chat_input(placeholder="Ask me anything..."):
+    # Append the new user message to session state
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
 
@@ -47,18 +46,18 @@ if prompt := st.chat_input(placeholder="What is machine learning?"):
         tools,
         llm,
         agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-        handle_parsing_errors=True
+        handle_parsing_errors=True,
     )
 
-    # Debugging: Add logs to inspect the messages and outputs
-    print("Messages sent to agent:", st.session_state["messages"])
-
-    # Use callback handler for real-time thoughts/actions
+    # Create a callback handler for Streamlit
     with st.chat_message("assistant"):
         st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
-
         try:
-            response = search_agent.run(st.session_state.messages, callbacks=[st_cb])
+            # Send only the latest user message (not the entire history)
+            latest_message = st.session_state.messages[-1]["content"]
+            response = search_agent.run(latest_message, callbacks=[st_cb])
+            
+            # Add the agent's response to the message history
             st.session_state.messages.append({'role': 'assistant', "content": response})
             st.write(response)
         except ValueError as e:

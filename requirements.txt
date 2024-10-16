@@ -27,3 +27,4 @@ unstructured
 pytube
 numexpr
 streamlit
+asyncio
