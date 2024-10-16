@@ -7,7 +7,7 @@ from langchain.callbacks import StreamlitCallbackHandler
 import os
 from dotenv import load_dotenv
 
-## Arxiv and Wikipedia Tools
+
 arxiv_wrapper = ArxivAPIWrapper(top_k_results=1, doc_content_chars_max=200)
 arxiv = ArxivQueryRun(api_wrapper=arxiv_wrapper)
 
@@ -19,7 +19,7 @@ search = DuckDuckGoSearchRun(name="Search")
 st.title("🔎 LangChain - Chat with search")
 
 
-## Sidebar for settings
+
 st.sidebar.title("Settings")
 api_key = st.sidebar.text_input("Enter your Groq API Key:", type="password")
 
